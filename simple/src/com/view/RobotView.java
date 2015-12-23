@@ -1,4 +1,4 @@
-package com.view;
+﻿package com.view;
 
 import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
@@ -318,6 +318,7 @@ public class RobotView extends SurfaceView implements SurfaceHolder.Callback {
 						// 机器人的位置点
 						history_robot.add(new Float[] { start_x, start_y });
 						p.setColor(Color.GREEN);
+						//运动轨迹点
 						for (Float[] floats : history_robot) {
 							canvas.drawCircle(floats[0] + position_x, floats[1]
 									+ position_y, 10, p);
