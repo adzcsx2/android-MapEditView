@@ -11,7 +11,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.text.TextUtils;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -93,6 +93,7 @@ public class MapEditActivity extends Activity implements OnClickListener {
 					fos = new FileOutputStream(file);
 					Bitmap bitmap = mapEditView.getMap();
 					bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+					MediaStore.Images.Media.insertImage(getContentResolver(), newPath, "title", "description");
 				} catch (FileNotFoundException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
