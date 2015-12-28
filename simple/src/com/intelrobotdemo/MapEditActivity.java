@@ -1,21 +1,34 @@
 package com.intelrobotdemo;
 
-import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
 
+import com.view.ColorPickView;
+import com.view.ColorPickView.OnColorChangedListener;
 import com.view.MapEditView;
 
 public class MapEditActivity extends Activity implements OnClickListener {
 
-	View btn_move, btn_draw, btn_clear, btn_back,btn_finish;
+	private static final String TAG = "MapEditActivity";
+	View btn_move, btn_draw, btn_clear, btn_back, btn_finish;
 	MapEditView mapEditView;
+	int paint_color = 0;
+	String map_path;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -28,8 +41,9 @@ public class MapEditActivity extends Activity implements OnClickListener {
 	private void ViewInit() {
 		mapEditView = (MapEditView) findViewById(R.id.mapEditView);
 		Intent intent = getIntent();
-		byte[] mapByteArray = intent.getByteArrayExtra("map");
-		Bitmap bitmap=BitmapFactory.decodeByteArray(mapByteArray, 0, mapByteArray.length); 
+		map_path = intent.getStringExtra("map");
+		Log.e(TAG, map_path);
+		Bitmap bitmap = BitmapFactory.decodeFile(map_path);
 		mapEditView.setMap(bitmap);
 		btn_move = findViewById(R.id.btn_move);
 		btn_draw = findViewById(R.id.btn_draw);
@@ -41,11 +55,15 @@ public class MapEditActivity extends Activity implements OnClickListener {
 		btn_back.setOnClickListener(this);
 		btn_draw.setOnClickListener(this);
 		btn_finish.setOnClickListener(this);
+		findViewById(R.id.paint_line).setOnClickListener(this);
+		findViewById(R.id.paint_circle).setOnClickListener(this);
+		findViewById(R.id.paint_rect).setOnClickListener(this);
+		findViewById(R.id.btn_colorpicker).setOnClickListener(this);
 	}
 
 	@Override
 	public void onClick(View v) {
-		// TODO Auto-generated method stub
+		Intent data = null;
 		switch (v.getId()) {
 		case R.id.btn_move:
 			mapEditView.setCanMove(true);
@@ -60,14 +78,86 @@ public class MapEditActivity extends Activity implements OnClickListener {
 			mapEditView.back();
 			break;
 		case R.id.btn_finish:
-			Intent data = new Intent();
-			Bitmap map = mapEditView.getMap();
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			map.compress(Bitmap.CompressFormat.PNG, 100, baos);
-			byte[] mapByte = baos.toByteArray();
-			data.putExtra("map", mapByte);
-			setResult(RESULT_OK,data);
+			// 复制一个文件，文件名为原文件名+a
+			data = new Intent();
+			if (mapEditView.getPathList().size() == 0) {
+				// 没有改变原图
+				data.putExtra("map", map_path);
+			} else {
+				String newPath = map_path.replace(".", "a.");
+				File file = new File(newPath);
+				data = new Intent();
+				data.putExtra("map", newPath);
+				FileOutputStream fos = null;
+				try {
+					fos = new FileOutputStream(file);
+					Bitmap bitmap = mapEditView.getMap();
+					bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} finally {
+					try {
+						fos.close();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+			setResult(RESULT_OK, data);
 			MapEditActivity.this.finish();
+			break;
+		case R.id.btn_colorpicker:
+			final Dialog dialog = new Dialog(MapEditActivity.this);
+			dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+			View view = LayoutInflater.from(MapEditActivity.this).inflate(
+					R.layout.dialog_colorpicker, null);
+			view.findViewById(R.id.btn_cancel).setOnClickListener(
+					new OnClickListener() {
+
+						@Override
+						public void onClick(View v) {
+							// TODO Auto-generated method stub
+							dialog.dismiss();
+						}
+					});
+			view.findViewById(R.id.btn_commit).setOnClickListener(
+					new OnClickListener() {
+
+						@Override
+						public void onClick(View v) {
+							// TODO Auto-generated method stub
+							if (paint_color != 0) {
+								mapEditView.setPaint_color(paint_color);
+							}
+							dialog.dismiss();
+						}
+					});
+			ColorPickView cp = (ColorPickView) view
+					.findViewById(R.id.view_colorpicker);
+			final View view_color = view.findViewById(R.id.view_color);
+			view_color.setBackgroundColor(paint_color);
+			cp.setOnColorChangedListener(new OnColorChangedListener() {
+
+				@Override
+				public void onColorChange(int color) {
+					// TODO Auto-generated method stub
+					paint_color = color;
+					view_color.setBackgroundColor(paint_color);
+				}
+			});
+			dialog.setContentView(view);
+			dialog.show();
+			break;
+		case R.id.paint_line:
+			mapEditView.setPaintMode(MapEditView.PAINT_LINE);
+			break;
+		case R.id.paint_circle:
+			mapEditView.setPaintMode(MapEditView.PAINT_CIRCLE);
+			break;
+		case R.id.paint_rect:
+			mapEditView.setPaintMode(MapEditView.PAINT_RECT);
 			break;
 
 		}

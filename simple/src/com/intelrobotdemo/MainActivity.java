@@ -1,6 +1,9 @@
 package com.intelrobotdemo;
 
 import java.io.ByteArrayOutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.LinkedList;
 
 import com.view.RobotView;
 
@@ -10,9 +13,11 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Path;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -28,7 +33,7 @@ public class MainActivity extends Activity implements OnClickListener {
 	private boolean isRun = false;
 	private View btn_choose, btn_edit, btn_clear, btn_rePlan, btn_stop,
 			btn_start;
-
+	private String map_path = "/storage/emulated/0/test.jpg";
 	
 	public Thread t;
 	
@@ -53,8 +58,7 @@ public class MainActivity extends Activity implements OnClickListener {
 	private void ViewInit() {
 		robotView = (RobotView) findViewById(R.id.robotView);
 
-		Bitmap map = BitmapFactory.decodeResource(getResources(),
-				R.drawable.map).copy(Bitmap.Config.ARGB_8888, true);
+		Bitmap map = BitmapFactory.decodeFile(map_path);
 		robotView.setMap(map);
 
 		btn_choose = findViewById(R.id.btn_choose);
@@ -84,11 +88,7 @@ public class MainActivity extends Activity implements OnClickListener {
 			break;
 		case R.id.btn_edit:
 			intent = new Intent(MainActivity.this, MapEditActivity.class);
-			Bitmap map = robotView.getMap();
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			map.compress(Bitmap.CompressFormat.PNG, 100, baos);
-			byte[] mapByte = baos.toByteArray();
-			intent.putExtra("map", mapByte);
+			intent.putExtra("map", map_path);
 			startActivityForResult(intent, RESULT_MAP_EDIT);
 			break;
 		case R.id.btn_rePlan:
@@ -170,6 +170,7 @@ public class MainActivity extends Activity implements OnClickListener {
 
 			int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
 			String picturePath = cursor.getString(columnIndex);
+			map_path =  picturePath;
 			cursor.close();
 			// String picturePath contains the path of selected Image
 			Bitmap map = BitmapFactory.decodeFile(picturePath);
@@ -177,10 +178,9 @@ public class MainActivity extends Activity implements OnClickListener {
 			clear();
 		} else if (requestCode == RESULT_MAP_EDIT && resultCode == RESULT_OK
 				&& null != data) {
-			byte[] mapByteArray = data.getByteArrayExtra("map");
-			Bitmap bitmap = BitmapFactory.decodeByteArray(mapByteArray, 0,
-					mapByteArray.length);
-			robotView.setMap(bitmap);
+			map_path = data.getStringExtra("map");
+			Bitmap map = BitmapFactory.decodeFile(map_path);
+			robotView.setMap(map);
 		}
 	}
 	

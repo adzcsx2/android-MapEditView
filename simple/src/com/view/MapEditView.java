@@ -1,28 +1,32 @@
 package com.view;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
-import android.graphics.Path;
-import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import com.intelrobotdemo.R;
+import com.intelrobotdemo.SerializablePath;
+import com.intelrobotdemo.Utils;
 
 public class MapEditView extends SurfaceView implements SurfaceHolder.Callback {
 
+	public static final int PAINT_LINE = 0;
+	public static final int PAINT_CIRCLE = 1;
+	public static final int PAINT_RECT = 2;
+	public static final int PAINT_TEXT = 3;
+
 	private static final String TAG = "MapEditView";
 	private static final float MIN_RATE = 0.5f, MAX_RATE = 100f;
+	private int PAINTMODE = 0;
 	private SurfaceHolder holder;
 	private float end_x = 0, end_y = 0, start_x, start_y;
 	private boolean isPointer = false;
@@ -40,8 +44,10 @@ public class MapEditView extends SurfaceView implements SurfaceHolder.Callback {
 	private boolean canMove = false;
 
 	private Paint p;
-	private Path path = new Path();
-	private LinkedList<Path> pathList = new LinkedList<Path>();
+	private SerializablePath path = new SerializablePath();
+	private int paint_color = 0;
+	private ArrayList<SerializablePath> pathList = new ArrayList<SerializablePath>();
+	private ArrayList<Integer> pathColorList = new ArrayList<Integer>();
 	private Canvas canvas;
 
 	public MapEditView(Context context, AttributeSet attrs, int defStyle) {
@@ -49,7 +55,7 @@ public class MapEditView extends SurfaceView implements SurfaceHolder.Callback {
 		holder = this.getHolder();
 		holder.addCallback(this);
 		p = new Paint();
-		p.setColor(Color.RED);
+		paint_color = Color.RED;
 		p.setTextSize(10);
 		p.setAntiAlias(true);
 		p.setStyle(Style.STROKE);
@@ -59,7 +65,7 @@ public class MapEditView extends SurfaceView implements SurfaceHolder.Callback {
 		super(context, attrs);
 		holder = this.getHolder();
 		p = new Paint();
-		p.setColor(Color.RED);
+		paint_color = Color.RED;
 		p.setTextSize(10);
 		p.setAntiAlias(true);
 		p.setStyle(Style.STROKE);
@@ -71,16 +77,23 @@ public class MapEditView extends SurfaceView implements SurfaceHolder.Callback {
 		holder = this.getHolder();
 		holder.addCallback(this);
 		p = new Paint();
-		p.setColor(Color.RED);
+		paint_color = Color.RED;
 		p.setTextSize(10);
 		p.setAntiAlias(true);
 		p.setStyle(Style.STROKE);
 	}
 
-	@Override
-	public void surfaceCreated(SurfaceHolder holder) {
-		canvas = getHolder().lockCanvas();
-		draw(canvas);
+
+	public ArrayList<SerializablePath> getPathList() {
+		return pathList;
+	}
+
+	public ArrayList<Integer> getPathColorList() {
+		return pathColorList;
+	}
+
+	public void setPaint_color(int paint_color) {
+		this.paint_color = paint_color;
 	}
 
 	public float getStart_x() {
@@ -111,15 +124,26 @@ public class MapEditView extends SurfaceView implements SurfaceHolder.Callback {
 		return saveDraw();
 	}
 
+	public void setPaintMode(int mode) {
+		this.PAINTMODE = mode;
+	}
+
 	public void clear() {
 		path.reset();
 		pathList.clear();
+		pathColorList.clear();
 		draw(canvas);
 	}
 
 	public void back() {
 		path.reset();
-		pathList.removeLast();
+		pathList.remove(pathList.size() - 1);
+		pathColorList.remove(pathColorList.size() - 1);
+		draw(canvas);
+	}
+
+	@Override
+	public void surfaceCreated(SurfaceHolder holder) {
 		draw(canvas);
 	}
 
@@ -138,6 +162,7 @@ public class MapEditView extends SurfaceView implements SurfaceHolder.Callback {
 	// 两点触控的中间点
 	private float pointer_centerX = 0, pointer_centerY = 0;
 	private float down_x = 0, down_y = 0;
+	private float init_x = 0, init_y = 0;
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
@@ -147,11 +172,12 @@ public class MapEditView extends SurfaceView implements SurfaceHolder.Callback {
 		case MotionEvent.ACTION_DOWN:
 			Log.i(TAG, "单点down");
 			isMove = false;
-			down_x = event.getX() / rate;
-			down_y = event.getY() / rate;
+			init_x = down_x = event.getX() / rate;
+			init_y = down_y = event.getY() / rate;
+
 			isPointer = false;
 			first_time = System.currentTimeMillis();
-			path = new Path();
+			path = new SerializablePath();
 			path.moveTo((event.getX()) / rate, (event.getY()) / rate);
 			draw(canvas);
 
@@ -174,6 +200,7 @@ public class MapEditView extends SurfaceView implements SurfaceHolder.Callback {
 					end_y = event.getY() / rate - position_y;
 				}
 				pathList.add(path);
+				pathColorList.add(p.getColor());
 			}
 			break;
 		// 多点触摸
@@ -222,14 +249,31 @@ public class MapEditView extends SurfaceView implements SurfaceHolder.Callback {
 					down_x = event.getX() / rate;
 					down_y = event.getY() / rate;
 
-					for (Path paths : pathList) {
+					for (SerializablePath paths : pathList) {
 						paths.offset(off_x, off_y);
 					}
 
 				} else {
-					end_x = event.getX() / rate - position_x;
-					end_y = event.getY() / rate - position_y;
-					path.lineTo((event.getX()) / rate, (event.getY()) / rate);
+					end_x = event.getX() / rate;
+					end_y = event.getY() / rate;
+					switch (PAINTMODE) {
+					case PAINT_LINE:
+						path.lineTo(end_x, end_y);
+						break;
+					case PAINT_CIRCLE:
+						path.reset();
+						path.addCircle(init_x, init_y, (int) Utils.getDistance(
+								init_x, init_y, end_x, end_y),
+								SerializablePath.Direction.CW);
+						break;
+					case PAINT_RECT:
+						path.reset();
+						path.addRect(init_x, init_y, end_x, end_y,
+								SerializablePath.Direction.CW);
+						break;
+					case PAINT_TEXT:
+						break;
+					}
 				}
 			}
 			break;
@@ -241,10 +285,15 @@ public class MapEditView extends SurfaceView implements SurfaceHolder.Callback {
 		return true;
 	}
 
-	@Override
 	public void draw(Canvas canvas) {
 		synchronized (holder) {
-//			holder.lockCanvas();
+			// 避免第一次绘制报hasLock的exception
+			if (canvas == null) {
+				canvas = holder.lockCanvas();
+				this.canvas = canvas;
+			} else {
+				holder.lockCanvas();
+			}
 			// //////////////////////////////////////////////
 			myDraw(canvas, false);
 			// ///////////////////////////////////////////////
@@ -257,16 +306,16 @@ public class MapEditView extends SurfaceView implements SurfaceHolder.Callback {
 				Bitmap.Config.ARGB_8888);
 		Canvas canvas = new Canvas(bitmap);
 		// 把屏幕的内容画在新画布上
-		myDraw(canvas,true);
+		myDraw(canvas, true);
 		return bitmap;
 	}
 
 	private void myDraw(Canvas canvas, boolean isSave) {
 		canvas.drawColor(Color.WHITE);
-		//将比例、位移初始化
+		// 将比例、位移初始化
 		if (isSave) {
 			rate = 1;
-			for (Path paths : pathList) {
+			for (SerializablePath paths : pathList) {
 				paths.offset(-position_x, -position_y);
 			}
 			position_x = 0;
@@ -277,9 +326,11 @@ public class MapEditView extends SurfaceView implements SurfaceHolder.Callback {
 			canvas.scale(rate, rate, 0, 0);
 		}
 		canvas.drawBitmap(map, position_x, position_y, p);
-		for (Path paths : pathList) {
-			canvas.drawPath(paths, p);
+		for (int i = 0; i < pathList.size(); i++) {
+			p.setColor(pathColorList.get(i));
+			canvas.drawPath(pathList.get(i), p);
 		}
+		p.setColor(paint_color);
 		canvas.drawPath(path, p);
 	}
 

@@ -1,11 +1,13 @@
-﻿package com.view;
+package com.view;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.intelrobotdemo.HttpUtil;
 import com.intelrobotdemo.R;
+import com.intelrobotdemo.SerializablePath;
 import com.intelrobotdemo.R.drawable;
 
 import android.content.Context;
@@ -33,6 +35,8 @@ public class RobotView extends SurfaceView implements SurfaceHolder.Callback {
 	private LinkedList<Float[]> history_robot = new LinkedList<Float[]>();
 	private LinkedList<Float[]> history_aim = new LinkedList<Float[]>();
 	private ExecutorService singleThread = Executors.newSingleThreadExecutor();
+	private ArrayList<SerializablePath> pathList = new ArrayList<SerializablePath>();
+	private ArrayList<Integer> pathColorList = new ArrayList<Integer>();
 	private boolean isPointer = false;
 	// 放大比例
 	private float rate = 1, oldRate = 1;
@@ -68,13 +72,12 @@ public class RobotView extends SurfaceView implements SurfaceHolder.Callback {
 		singleThread.execute(getInitPosRunnable);
 	}
 
-	@Override
-	public void surfaceCreated(SurfaceHolder holder) {
-		ui_thread = new UiThread(holder);
-		ui_thread.isRun = true;
-		ui_thread.start();
+	public void setData(ArrayList<SerializablePath> pathList,
+			ArrayList<Integer> pathColorList) {
+		this.pathList = pathList;
+		this.pathColorList = pathColorList;
 	}
-
+	
 	public float getStart_x() {
 		return start_x;
 	}
@@ -95,11 +98,12 @@ public class RobotView extends SurfaceView implements SurfaceHolder.Callback {
 		this.map = map;
 	}
 
-	public Bitmap getMap() {
-		return this.map == null ? BitmapFactory.decodeResource(getResources(),
-				R.drawable.map) : map;
+	@Override
+	public void surfaceCreated(SurfaceHolder holder) {
+		ui_thread = new UiThread(holder);
+		ui_thread.isRun = true;
+		ui_thread.start();
 	}
-
 	@Override
 	public void surfaceChanged(SurfaceHolder holder, int format, int width,
 			int height) {
@@ -107,12 +111,10 @@ public class RobotView extends SurfaceView implements SurfaceHolder.Callback {
 
 	@Override
 	public void surfaceDestroyed(SurfaceHolder holder) {
-		Log.e(TAG, "stop");
 		surfaceStop();
 	}
 
 	public void surfaceStop() {
-		// TODO Auto-generated method stub
 		ui_thread.isRun = false;
 		ui_thread.interrupt();
 	}
@@ -318,7 +320,6 @@ public class RobotView extends SurfaceView implements SurfaceHolder.Callback {
 						// 机器人的位置点
 						history_robot.add(new Float[] { start_x, start_y });
 						p.setColor(Color.GREEN);
-						//运动轨迹点
 						for (Float[] floats : history_robot) {
 							canvas.drawCircle(floats[0] + position_x, floats[1]
 									+ position_y, 10, p);

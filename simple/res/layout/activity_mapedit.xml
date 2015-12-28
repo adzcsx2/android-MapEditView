@@ -4,11 +4,58 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <com.view.MapEditView
-        android:id="@+id/mapEditView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1" />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="horizontal" >
+
+        <com.view.MapEditView
+            android:id="@+id/mapEditView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+
+            
+            <Button
+                android:id="@+id/btn_colorpicker"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:text="选择颜色" />
+            
+            <Button
+                android:id="@+id/paint_line"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:text="线" />
+
+            <Button
+                android:id="@+id/paint_circle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:text="圆" />
+
+            <Button
+                android:id="@+id/paint_rect"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:text="方" />
+        </LinearLayout>
+    </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
@@ -21,6 +68,7 @@
             android:layout_marginRight="10dp"
             android:layout_weight="1"
             android:text="Move" />
+
         <Button
             android:id="@+id/btn_draw"
             android:layout_width="match_parent"
@@ -29,6 +77,7 @@
             android:layout_marginRight="10dp"
             android:layout_weight="1"
             android:text="Draw" />
+
         <Button
             android:id="@+id/btn_clear"
             android:layout_width="match_parent"
@@ -37,6 +86,7 @@
             android:layout_marginRight="10dp"
             android:layout_weight="1"
             android:text="Clear" />
+
         <Button
             android:id="@+id/btn_back"
             android:layout_width="match_parent"
@@ -45,6 +95,7 @@
             android:layout_marginRight="10dp"
             android:layout_weight="1"
             android:text="Back" />
+
         <Button
             android:id="@+id/btn_finish"
             android:layout_width="match_parent"

@@ -13,6 +13,38 @@ public final class R {
         public static final int stream_values=0x7f070001;
     }
     public static final class attr {
+        /**  可滑动小球的颜色 
+         <p>Must be a color value, in the form of "<code>#<i>rgb</i></code>", "<code>#<i>argb</i></code>",
+"<code>#<i>rrggbb</i></code>", or "<code>#<i>aarrggbb</i></code>".
+<p>This may also be a reference to a resource (in the form
+"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
+theme attribute (in the form
+"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
+containing a value of this type.
+         */
+        public static final int center_color=0x7f010002;
+        /**  可滑动小球的半径 
+         <p>Must be a dimension value, which is a floating point number appended with a unit such as "<code>14.5sp</code>".
+Available units are: px (pixels), dp (density-independent pixels), sp (scaled pixels based on preferred font size),
+in (inches), mm (millimeters).
+<p>This may also be a reference to a resource (in the form
+"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
+theme attribute (in the form
+"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
+containing a value of this type.
+         */
+        public static final int center_radius=0x7f010001;
+        /**  背景圆的半径 
+         <p>Must be a dimension value, which is a floating point number appended with a unit such as "<code>14.5sp</code>".
+Available units are: px (pixels), dp (density-independent pixels), sp (scaled pixels based on preferred font size),
+in (inches), mm (millimeters).
+<p>This may also be a reference to a resource (in the form
+"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
+theme attribute (in the form
+"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
+containing a value of this type.
+         */
+        public static final int circle_radius=0x7f010000;
     }
     public static final class dimen {
         /**  Default screen margins, per the Android Design guidelines. 
@@ -27,29 +59,41 @@ public final class R {
     public static final class drawable {
         public static final int ic_launcher=0x7f020000;
         public static final int map=0x7f020001;
+        public static final int piccolor=0x7f020002;
+        public static final int reading__color_view__button=0x7f020003;
+        public static final int reading__color_view__button_press=0x7f020004;
     }
     public static final class id {
-        public static final int action_others=0x7f0a000f;
-        public static final int btn_back=0x7f0a000a;
+        public static final int action_others=0x7f0a0017;
+        public static final int btn_back=0x7f0a000e;
+        public static final int btn_cancel=0x7f0a0015;
         public static final int btn_choose=0x7f0a0001;
         public static final int btn_clear=0x7f0a0003;
-        public static final int btn_draw=0x7f0a0009;
+        public static final int btn_colorpicker=0x7f0a0008;
+        public static final int btn_commit=0x7f0a0016;
+        public static final int btn_draw=0x7f0a000d;
         public static final int btn_edit=0x7f0a0002;
-        public static final int btn_finish=0x7f0a000b;
-        public static final int btn_move=0x7f0a0008;
+        public static final int btn_finish=0x7f0a000f;
+        public static final int btn_move=0x7f0a000c;
         public static final int btn_rePlan=0x7f0a0004;
         public static final int btn_start=0x7f0a0006;
         public static final int btn_stop=0x7f0a0005;
         public static final int mapEditView=0x7f0a0007;
+        public static final int paint_circle=0x7f0a000a;
+        public static final int paint_line=0x7f0a0009;
+        public static final int paint_rect=0x7f0a000b;
         public static final int robotView=0x7f0a0000;
-        public static final int tv_light=0x7f0a000e;
-        public static final int tv_search=0x7f0a000c;
-        public static final int tv_tem=0x7f0a000d;
+        public static final int tv_light=0x7f0a0012;
+        public static final int tv_search=0x7f0a0010;
+        public static final int tv_tem=0x7f0a0011;
+        public static final int view_color=0x7f0a0014;
+        public static final int view_colorpicker=0x7f0a0013;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
         public static final int activity_mapedit=0x7f030001;
         public static final int activity_others=0x7f030002;
+        public static final int dialog_colorpicker=0x7f030003;
     }
     public static final class menu {
         public static final int main=0x7f090000;
@@ -92,4 +136,76 @@ public final class R {
     public static final class xml {
         public static final int tts_setting=0x7f040000;
     }
+    public static final class styleable {
+        /** Attributes that can be used with a color_picker.
+           <p>Includes the following attributes:</p>
+           <table>
+           <colgroup align="left" />
+           <colgroup align="left" />
+           <tr><th>Attribute</th><th>Description</th></tr>
+           <tr><td><code>{@link #color_picker_center_color com.intelrobotdemo:center_color}</code></td><td> 可滑动小球的颜色 </td></tr>
+           <tr><td><code>{@link #color_picker_center_radius com.intelrobotdemo:center_radius}</code></td><td> 可滑动小球的半径 </td></tr>
+           <tr><td><code>{@link #color_picker_circle_radius com.intelrobotdemo:circle_radius}</code></td><td> 背景圆的半径 </td></tr>
+           </table>
+           @see #color_picker_center_color
+           @see #color_picker_center_radius
+           @see #color_picker_circle_radius
+         */
+        public static final int[] color_picker = {
+            0x7f010000, 0x7f010001, 0x7f010002
+        };
+        /**
+          <p>
+          @attr description
+           可滑动小球的颜色 
+
+
+          <p>Must be a color value, in the form of "<code>#<i>rgb</i></code>", "<code>#<i>argb</i></code>",
+"<code>#<i>rrggbb</i></code>", or "<code>#<i>aarrggbb</i></code>".
+<p>This may also be a reference to a resource (in the form
+"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
+theme attribute (in the form
+"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
+containing a value of this type.
+          <p>This is a private symbol.
+          @attr name com.intelrobotdemo:center_color
+        */
+        public static final int color_picker_center_color = 2;
+        /**
+          <p>
+          @attr description
+           可滑动小球的半径 
+
+
+          <p>Must be a dimension value, which is a floating point number appended with a unit such as "<code>14.5sp</code>".
+Available units are: px (pixels), dp (density-independent pixels), sp (scaled pixels based on preferred font size),
+in (inches), mm (millimeters).
+<p>This may also be a reference to a resource (in the form
+"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
+theme attribute (in the form
+"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
+containing a value of this type.
+          <p>This is a private symbol.
+          @attr name com.intelrobotdemo:center_radius
+        */
+        public static final int color_picker_center_radius = 1;
+        /**
+          <p>
+          @attr description
+           背景圆的半径 
+
+
+          <p>Must be a dimension value, which is a floating point number appended with a unit such as "<code>14.5sp</code>".
+Available units are: px (pixels), dp (density-independent pixels), sp (scaled pixels based on preferred font size),
+in (inches), mm (millimeters).
+<p>This may also be a reference to a resource (in the form
+"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
+theme attribute (in the form
+"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
+containing a value of this type.
+          <p>This is a private symbol.
+          @attr name com.intelrobotdemo:circle_radius
+        */
+        public static final int color_picker_circle_radius = 0;
+    };
 }
