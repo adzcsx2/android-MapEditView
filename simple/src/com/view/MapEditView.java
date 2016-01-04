@@ -14,8 +14,8 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import com.intelrobotdemo.SerializablePath;
-import com.intelrobotdemo.Utils;
+import com.util.SerializablePath;
+import com.util.Utils;
 
 public class MapEditView extends SurfaceView implements SurfaceHolder.Callback {
 
@@ -83,7 +83,6 @@ public class MapEditView extends SurfaceView implements SurfaceHolder.Callback {
 		p.setStyle(Style.STROKE);
 	}
 
-
 	public ArrayList<SerializablePath> getPathList() {
 		return pathList;
 	}
@@ -136,10 +135,12 @@ public class MapEditView extends SurfaceView implements SurfaceHolder.Callback {
 	}
 
 	public void back() {
-		path.reset();
-		pathList.remove(pathList.size() - 1);
-		pathColorList.remove(pathColorList.size() - 1);
-		draw(canvas);
+		if (pathList.size() != 0) {
+			path.reset();
+			pathList.remove(pathList.size() - 1);
+			pathColorList.remove(pathColorList.size() - 1);
+			draw(canvas);
+		}
 	}
 
 	@Override

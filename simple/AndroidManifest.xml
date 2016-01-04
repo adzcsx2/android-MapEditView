@@ -19,14 +19,14 @@
         android:targetSdkVersion="18" />
 
     <application
-        android:name="com.intelrobotdemo.SpeechApp"
+        android:name="com.ui.SpeechApp"
         android:allowBackup="true"
         android:configChanges="orientation|keyboardHidden"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@android:style/Theme.Holo.Light.NoActionBar.Fullscreen" >
         <activity
-            android:name="com.intelrobotdemo.MainActivity"
+            android:name="com.ui.MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="landscape" >
             <intent-filter>
@@ -36,11 +36,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.intelrobotdemo.OthersInfoActivity"
+            android:name="com.ui.OthersInfoActivity"
             android:screenOrientation="landscape" >
         </activity>
         <activity
-            android:name="com.intelrobotdemo.MapEditActivity"
+            android:name="com.ui.MapEditActivity"
             android:screenOrientation="landscape" >
         </activity>
     </application>

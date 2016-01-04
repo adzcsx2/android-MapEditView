@@ -5,10 +5,10 @@ import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import com.intelrobotdemo.HttpUtil;
 import com.intelrobotdemo.R;
-import com.intelrobotdemo.SerializablePath;
 import com.intelrobotdemo.R.drawable;
+import com.util.HttpUtil;
+import com.util.SerializablePath;
 
 import android.content.Context;
 import android.graphics.Bitmap;
